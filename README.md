@@ -1,69 +1,147 @@
-# Codex Bundled Repair
+<div align="center">
 
-An independent, unofficial command-line helper for diagnosing and repairing `chrome@openai-bundled` and `computer-use@openai-bundled` in Codex Desktop on Windows and macOS.
+<h1>🧰 Codex Bundled Repair</h1>
+<p><strong>A small pit stop for Chrome and Computer Use in Codex Desktop.</strong></p>
+<p>Find a broken bundled plugin, back up your setup, and verify the result on Windows or macOS.</p>
+<p><a href="https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v0.1.0-preview.1">Download the preview</a> · <a href="#how-it-works">How it works</a> · <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/issues">Report an issue</a></p>
+<p>
+  <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml"><img alt="Build and tests" src="https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v0.1.0-preview.1"><img alt="Preview release" src="https://img.shields.io/github/v/release/ChaiBoonHong/codex-bundled-repair?include_prereleases&amp;label=preview"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-2ea44f"></a>
+</p>
 
-The default command is read-only. It checks the staged source against the installed desktop package when that package can be located. When a plugin is missing, disabled, or its cached manifest differs from the installed bundled source, `--repair` offers a confirmed repair. It asks Codex Desktop to quit, backs up `~/.codex/plugins`, `config.toml`, and the global state file when present, then uses Codex's own `plugin add` command. It can move a damaged plugin cache into a reversible quarantine before reinstalling that plugin. It never takes ownership of WindowsApps, changes its permissions, or manually registers the reserved `openai-bundled` marketplace.
+</div>
 
-## Download and run
+> [!IMPORTANT]
+> The first Windows and macOS downloads are **unsigned previews**. Automated tests and builds pass on both platforms. A real Chrome click passed on Windows; the Windows Computer Use file edit and both macOS desktop actions still need live verification.
 
-Download the ZIP for your platform from GitHub Releases and compare its SHA-256 value with `SHA256SUMS` (`sha256sum -c SHA256SUMS` in a folder containing both ZIPs). Both initial binaries are unsigned **previews**. Windows may show a SmartScreen warning. The macOS build has automated build and test coverage but no real Mac desktop verification yet; the Windows Computer Use file-edit test also remains unverified.
+## The four-step tune-up
 
-Extract the ZIP, open a terminal in that folder, and run:
-
-| Task | Windows | macOS |
+| | What happens | Your control |
 |---|---|---|
-| Diagnose, no changes | `./codex-bundled-repair-windows.exe` | `./codex-bundled-repair-macos-preview` |
-| Offer backed-up repairs | `./codex-bundled-repair-windows.exe --repair` | `./codex-bundled-repair-macos-preview --repair` |
-| Guided live test | `./codex-bundled-repair-windows.exe --test` | `./codex-bundled-repair-macos-preview --test` |
+| 🔎 **Inspect** | Read the Codex marketplace, both plugin states, and the installed desktop bundle. | The default run makes no changes. |
+| 📦 **Back up** | Copy the plugin directory, configuration, and available global state file. | Repair stops if the backup cannot be verified. |
+| 🛠️ **Repair** | Install or enable a target plugin with Codex's own CLI; quarantine a bad cache if needed. | Confirm closing Codex and each plugin change. |
+| 🧪 **Prove it** | Try a temporary text file and a local Chrome page. | Approve only those targets in Codex Desktop. |
 
-If macOS says the file cannot be run, use `chmod +x ./codex-bundled-repair-macos-preview` in Terminal. The preview is unsigned; review the source and release checksum before deciding whether to run it. The tool does not ask you to disable system security.
+## Get started
 
-The live test creates a disposable text file, opens it in Notepad or TextEdit, and serves a local test page at `127.0.0.1:<port>/mock`. It asks you to send two scoped prompts in Codex Desktop. A pass requires Computer Use to change the test file and Chrome to click the test page's button. It does not read your existing documents or tabs.
+1. Download the ZIP for your platform and **SHA256SUMS** from the [preview release](https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v0.1.0-preview.1).
+2. Check the ZIP's SHA-256 value, then extract it.
+3. Start with the read-only check. Run repair only if it reports a problem.
 
-If Notepad or TextEdit cannot open a file in the system temporary folder, pass `--test-dir <accessible-folder>` to create the disposable file under a folder you own. The tool never changes directory permissions.
+**Windows PowerShell**
 
-## What the results mean
+~~~powershell
+.\codex-bundled-repair-windows.exe
+.\codex-bundled-repair-windows.exe --repair
+.\codex-bundled-repair-windows.exe --test
+~~~
 
-- **Healthy:** both plugins are listed as installed and enabled, and their cached manifests match the bundled source. This is still only a file and CLI check; use `--test` for actual desktop operation.
-- **Repair offered:** one or both plugins are missing, disabled, or have an invalid cache. The tool shows each proposed change and asks before it acts.
-- **Reserved source unavailable:** the bundled marketplace is absent or invalid. The tool stops and recommends the official Codex Desktop repair or reinstall path. Current Codex builds can reject manual `openai-bundled` registration, so the tool will not remove or replace that registration.
-- **Live test incomplete:** review the Codex permissions, Chrome extension connection, and error shown by Codex. The tool offers to keep the repair or roll it back. It refuses automatic rollback if Codex changed `config.toml` after repair, to avoid overwriting newer settings.
+**macOS Terminal**
 
-Backups stay under `~/CodexPluginRepairBackups/` until you remove them yourself. Each backup contains a copy of the plugin directory, the available configuration/state files, and a `backup.json` manifest recording files and Windows junctions. The tool does not upload diagnostics or personal files.
+~~~bash
+./codex-bundled-repair-macos-preview
+./codex-bundled-repair-macos-preview --repair
+./codex-bundled-repair-macos-preview --test
+~~~
 
-## Design
+Each line is a separate command. Running the program without a flag only diagnoses. The <code>--repair</code> flag asks before it closes Codex or changes a plugin; <code>--test</code> starts the guided desktop test.
 
-```mermaid
+<details>
+<summary><strong>How do I check the download?</strong></summary>
+
+Place both ZIPs and <code>SHA256SUMS</code> in the same folder.
+
+- On macOS, run <code>shasum -a 256 -c SHA256SUMS</code>.
+- On Windows, run <code>(Get-FileHash .\codex-bundled-repair-windows.zip -Algorithm SHA256).Hash</code> in PowerShell and compare the result with the Windows line in <code>SHA256SUMS</code>.
+
+The binaries are unsigned. Windows may show a SmartScreen warning. macOS may block an unsigned download; the tool does not ask you to turn off system security. If the executable bit was lost when extracting the macOS ZIP, run <code>chmod +x ./codex-bundled-repair-macos-preview</code>.
+
+</details>
+
+## How it works
+
+~~~mermaid
 flowchart LR
-    A[Read Codex CLI JSON] --> B{Bundled source valid?}
-    B -- No --> C[Stop and explain official app repair]
-    B -- Yes --> D[Check two plugin caches]
-    D --> E{Repair needed?}
-    E -- No --> F[Offer guided live test]
-    E -- Yes --> G[Confirm close and back up]
-    G --> H[Confirm each plugin repair]
-    H --> I[Verify CLI and cache]
-    I --> F
-    F --> J{Live test passed?}
-    J -- No --> K[Offer keep or safe rollback]
-```
+    A["🔎 Read-only check"] --> B{"Bundle valid?"}
+    B -- No --> C["Stop with a clear diagnosis"]
+    B -- Yes --> D{"Plugin needs repair?"}
+    D -- No --> H["🧪 Guided live test"]
+    D -- Yes --> E["📦 Back up and verify"]
+    E --> F["Confirm each change"]
+    F --> G["Recheck CLI and cache"]
+    G --> H
+    H --> I{"Live test passed?"}
+    I -- No --> J["Choose: keep or safe rollback"]
+~~~
 
-The program is one Python standard-library module. PyInstaller is used only when creating release binaries. There is no runtime Python requirement for people using a release ZIP.
+The tool compares the resolved <code>openai-bundled</code> source with the desktop package when the package is accessible. It checks <code>chrome@openai-bundled</code> and <code>computer-use@openai-bundled</code> with Codex's JSON CLI output, then compares the cached manifests with their bundled originals.
 
-## Build and test from source
+A repair is offered only for a missing or disabled target plugin, or a damaged plugin cache. It uses <code>codex plugin add</code> after a verified backup. An original cache moved for repair remains in a reversible quarantine. Backups stay under <code>~/CodexPluginRepairBackups/</code> until you remove them.
 
-Use Python 3.12 or newer. Run `python -m venv .venv`, activate it, then run `python -m unittest discover -s tests -v`. For a local standalone build, install `pyinstaller==6.22.3` in the virtual environment and run `python build_release.py`. Build Windows on Windows and macOS on macOS. The GitHub Actions workflow performs both builds and tests. Tagging a commit `v*` creates a GitHub Release with ZIPs and checksums.
+> [!CAUTION]
+> If the reserved bundled source itself is missing or invalid, the tool stops and points you to the official Codex Desktop repair or reinstall path. Newer Codex builds can reject manual registration of <code>openai-bundled</code>. This tool never changes WindowsApps permissions, bypasses macOS permissions, or replaces that reserved registration.
 
-No test changes a real Codex installation. The automated tests use temporary directories and mocked Codex CLI responses. A real desktop live test still needs Codex, Chrome, account access, and user approval on that machine.
+### The live test uses your desktop, not your personal data
 
-## Search record
+The <code>--test</code> command creates a disposable text file, opens it in Notepad or TextEdit, and serves one page at <code>127.0.0.1:&lt;port&gt;/mock</code>. It gives you two prompts to send in Codex Desktop. A pass requires Computer Use to edit the temporary file and Chrome to click the page's test button. The tool waits up to five minutes and reports each result separately.
 
-- [OpenAI's CLI reference](https://learn.chatgpt.com/docs/developer-commands) documents `codex doctor`, `codex plugin`, and JSON output; use those native commands rather than parse human-readable tables.
-- [OpenAI's Computer Use guide](https://learn.chatgpt.com/docs/computer-use) places desktop UI operation in the Windows/macOS app. [OpenAI's browser guide](https://learn.chatgpt.com/docs/browser) says the built-in browser is unavailable in the CLI. The live test therefore runs through a guided desktop task, not `codex exec`.
-- [This Codex issue](https://github.com/openai/codex/issues/41164) reports that newer builds reject manual registration of the reserved `openai-bundled` source. The tool stops when the source is invalid instead of repeating that failed workaround.
-- [An existing Windows repair script](https://github.com/Jensen-Yao/codex-openai-bundled-plugin-repair) documents earlier repairs but uses marketplace remove/add. This project keeps the smaller supported path and adds macOS checks, backups, rollback, and tests.
+If your editor cannot reach the system temporary folder, use <code>--test-dir &lt;folder-you-own&gt;</code>. The tool creates a temporary subfolder there and does not change directory permissions. It never uploads diagnostics, reads your existing documents, or acts on existing browser tabs.
+
+## Know your result
+
+| Result | Meaning | Next step |
+|---|---|---|
+| **Both plugins ready** | Codex lists them as installed and enabled, and the local cache matches. | Run <code>--test</code> to check real desktop use. |
+| **Repair offered** | A target plugin is missing, disabled, or has a bad cache. | Review the backup and each proposed change. |
+| **Bundled source unavailable** | Codex cannot resolve a complete source that matches the app. | Repair or reinstall the official desktop app. |
+| **Live test incomplete** | One or both desktop actions did not finish. | Check Codex permissions and the Chrome extension; choose whether to keep the repair or roll it back. |
+
+If Codex edits <code>config.toml</code> after repair, the tool stops an automatic rollback rather than overwrite those newer settings. Your backup remains available.
+
+## Build, test, release
+
+The application is a single Python standard-library module. People using a release ZIP do **not** need Python. PyInstaller is needed only to make standalone binaries.
+
+Use Python 3.12 or newer. Create a virtual environment and activate it with <code>.\.venv\Scripts\Activate.ps1</code> on Windows or <code>source .venv/bin/activate</code> on macOS:
+
+~~~bash
+python -m venv .venv
+~~~
+
+Then test and build:
+
+~~~bash
+python -m unittest discover -s tests -v
+python -m pip install pyinstaller==6.22.3
+python build_release.py
+~~~
+
+Build on each target operating system. [GitHub Actions](https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml) runs the tests and packages Windows and macOS separately. Pushing a <code>v*</code> tag creates a Release with both ZIPs and <code>SHA256SUMS</code>; a tag containing <code>preview</code> is marked as a prerelease.
+
+The automated tests use temporary directories and mocked Codex CLI responses. They do not change a real Codex installation. For file responsibilities and call flow, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+### Verification so far
+
+| Check | Windows | macOS |
+|---|---|---|
+| Automated tests and standalone build | ✅ Passed | ✅ Passed in GitHub Actions |
+| Read-only check against Codex Desktop | ✅ Passed | ⏳ Needs a Mac |
+| Real Chrome test click | ✅ Passed | ⏳ Needs a Mac |
+| Real Computer Use file edit | ⏳ Needs a clean desktop run | ⏳ Needs a Mac |
+
+<details>
+<summary><strong>Research and design notes</strong></summary>
+
+- [OpenAI's CLI reference](https://learn.chatgpt.com/docs/developer-commands) documents Codex plugin commands and machine-readable output. The tool uses those commands instead of parsing a formatted table.
+- [OpenAI's Computer Use guide](https://learn.chatgpt.com/docs/computer-use) places desktop control in the Windows/macOS app. [The browser guide](https://learn.chatgpt.com/docs/browser) says its built-in browser is unavailable in the CLI, so the live test is guided through Codex Desktop.
+- [An OpenAI Codex issue](https://github.com/openai/codex/issues/41164) reports that newer builds reject manual registration of the reserved <code>openai-bundled</code> source.
+- [An earlier Windows repair script](https://github.com/Jensen-Yao/codex-openai-bundled-plugin-repair) documents the older remove/add approach. This tool takes the supported path and adds macOS checks, verified backups, rollback, and tests.
 - No applicable ready-made repair solution was found on skills.sh during the initial search.
 
-## Status
+</details>
 
-Windows diagnostics, backups, repair logic, rollback, and automated tests are implemented. A read-only check and Chrome live click passed against a Windows Codex Desktop install. The full Windows Computer Use file-edit test was blocked by this development environment's temporary-folder access and later by concurrent user input in Notepad; the tool now accepts `--test-dir` for an accessible test folder. A macOS desktop GUI test still needs a real Mac. Both first-release assets remain preview until their respective live tests pass.
+---
+
+<sub>Independent, unofficial project. Not affiliated with OpenAI. Licensed under [MIT](LICENSE).</sub>
