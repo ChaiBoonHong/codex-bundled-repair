@@ -1,0 +1,10 @@
+.venv/
+.uv-cache/
+.pyinstaller-cache/
+__pycache__/
+*.pyc
+*.spec
+build/
+dist/
+mock/
+test-tmp/
