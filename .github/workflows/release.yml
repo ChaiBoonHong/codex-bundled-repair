@@ -51,4 +51,7 @@ jobs:
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS --verify-tag --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md
+        run: |
+          flags=()
+          if [[ "$GITHUB_REF_NAME" == *preview* ]]; then flags+=(--prerelease); fi
+          gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS --verify-tag --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md "${flags[@]}"

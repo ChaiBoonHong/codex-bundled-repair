@@ -6,7 +6,7 @@ The default command is read-only. It checks the staged source against the instal
 
 ## Download and run
 
-Download the ZIP for your platform from GitHub Releases and compare its SHA-256 value with `SHA256SUMS`. These binaries are unsigned. Windows may show a SmartScreen warning. The macOS build is a **preview**: it has automated build and test coverage but no real Mac desktop verification yet.
+Download the ZIP for your platform from GitHub Releases and compare its SHA-256 value with `SHA256SUMS`. Both initial binaries are unsigned **previews**. Windows may show a SmartScreen warning. The macOS build has automated build and test coverage but no real Mac desktop verification yet; the Windows Computer Use file-edit test also remains unverified.
 
 Extract the ZIP, open a terminal in that folder, and run:
 
@@ -66,4 +66,4 @@ No test changes a real Codex installation. The automated tests use temporary dir
 
 ## Status
 
-Windows diagnostics, backups, repair logic, rollback, and automated tests are implemented. A read-only check and Chrome live click passed against a Windows Codex Desktop install. The full Windows Computer Use file-edit test was blocked by this development sandbox's temporary-folder access; the tool now accepts `--test-dir` for an accessible test folder. A macOS desktop GUI test still needs a real Mac. macOS release assets must remain labeled preview until that test passes.
+Windows diagnostics, backups, repair logic, rollback, and automated tests are implemented. A read-only check and Chrome live click passed against a Windows Codex Desktop install. The full Windows Computer Use file-edit test was blocked by this development environment's temporary-folder access and later by concurrent user input in Notepad; the tool now accepts `--test-dir` for an accessible test folder. A macOS desktop GUI test still needs a real Mac. Both first-release assets remain preview until their respective live tests pass.
