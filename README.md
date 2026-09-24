@@ -6,7 +6,7 @@ The default command is read-only. It checks the staged source against the instal
 
 ## Download and run
 
-Download the ZIP for your platform from GitHub Releases and compare its SHA-256 value with `SHA256SUMS`. Both initial binaries are unsigned **previews**. Windows may show a SmartScreen warning. The macOS build has automated build and test coverage but no real Mac desktop verification yet; the Windows Computer Use file-edit test also remains unverified.
+Download the ZIP for your platform from GitHub Releases and compare its SHA-256 value with `SHA256SUMS` (`sha256sum -c SHA256SUMS` in a folder containing both ZIPs). Both initial binaries are unsigned **previews**. Windows may show a SmartScreen warning. The macOS build has automated build and test coverage but no real Mac desktop verification yet; the Windows Computer Use file-edit test also remains unverified.
 
 Extract the ZIP, open a terminal in that folder, and run:
 
