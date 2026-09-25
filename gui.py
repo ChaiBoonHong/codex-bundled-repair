@@ -1,7 +1,6 @@
 """Launch the local desktop interface for Codex Bundled Repair."""
 
 import ctypes
-import os
 from pathlib import Path
 import queue
 import shutil
@@ -134,11 +133,10 @@ def main():
             print(message, file=sys.stderr)
         return 1
 
-    os.chdir(ui_directory)
     api = RepairWindowAPI()
     window = webview.create_window(
         TITLE,
-        url="index.html",
+        url=str((ui_directory / "index.html").resolve()),
         js_api=api,
         width=1180,
         height=880,
@@ -149,9 +147,9 @@ def main():
     api.window = window
     try:
         if sys.platform == "win32":
-            webview.start(gui="edgechromium")
+            webview.start(gui="edgechromium", http_server=True)
         else:
-            webview.start()
+            webview.start(http_server=True)
     except Exception as error:
         message = f"The desktop window could not start.\n\n{error}"
         if sys.platform == "win32":

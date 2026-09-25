@@ -61,6 +61,30 @@ class GuiTests(unittest.TestCase):
         with patch.object(gui.sys, "platform", "win32"):
             self.assertFalse(gui.webview2_runtime_present(registry))
 
+    def test_main_serves_the_bundled_page_by_absolute_path(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            ui_directory = Path(temporary) / "_MEI123" / "ui"
+            ui_directory.mkdir(parents=True)
+            (ui_directory / "index.html").write_text("<html></html>", encoding="utf-8")
+            (ui_directory / "styles.css").write_text("", encoding="utf-8")
+
+            for platform, start_args in (
+                ("win32", {"gui": "edgechromium", "http_server": True}),
+                ("darwin", {"http_server": True}),
+            ):
+                with self.subTest(platform=platform):
+                    with (
+                        patch.object(gui.sys, "platform", platform),
+                        patch.object(gui, "webview2_runtime_present", return_value=True),
+                        patch.object(gui, "_ui_directory", return_value=ui_directory),
+                        patch.object(gui.webview, "create_window") as create_window,
+                        patch.object(gui.webview, "start") as start,
+                    ):
+                        self.assertEqual(gui.main(), 0)
+
+                    self.assertEqual(create_window.call_args.kwargs["url"], str((ui_directory / "index.html").resolve()))
+                    start.assert_called_once_with(**start_args)
+
     def test_action_uses_shared_cli_flow_and_emits_status(self):
         api = gui.RepairWindowAPI()
         api.window = Mock()

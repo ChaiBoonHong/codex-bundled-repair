@@ -168,7 +168,7 @@ Run <code>python gui.py</code> to launch the desktop window from a source checko
 | Check | Windows | macOS |
 |---|---|---|
 | Automated tests and GUI/CLI package builds | ✅ Passed in GitHub Actions | ✅ Passed in GitHub Actions |
-| Packaged GUI opens on a real desktop | ✅ Opened on the development machine | ⏳ Needs a Mac desktop run |
+| Packaged GUI entry page | ✅ Absolute bundled path fix included; manual window recheck pending | ⏳ Needs a Mac desktop run |
 | GUI repair and guided-test interaction | ⏳ Manual acceptance incomplete | ⏳ Manual acceptance incomplete |
 
 The automated repair tests use temporary profiles and mocked Codex CLI responses. They do not change a real Codex installation. The release notes also record that manual desktop interactions remain unverified.
