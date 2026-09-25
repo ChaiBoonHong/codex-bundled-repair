@@ -7,6 +7,6 @@ This release adds a local desktop window for diagnosis, repair, and the guided t
 - Diagnosis is read-only. Repair still requires a verified backup and confirmation before closing Codex Desktop and changing each plugin.
 - The guided test uses a temporary file and a localhost page. The tool does not upload diagnostics, read existing documents, or act on existing browser tabs.
 - The tool does not change WindowsApps permissions, bypass macOS system permissions, or re-register Codex's reserved `openai-bundled` marketplace.
-- This stable tag is created only after the packaged GUI and isolated repair flow have been verified on both Windows and macOS.
+- The Windows and macOS automated tests and package builds passed. The packaged GUI opened on the Windows development machine, but its repair and guided-test controls have not been manually exercised there. Manual GUI and repair-flow checks also remain incomplete on macOS.
 
 The unsigned ZIP SHA-256 values are published in `SHA256SUMS`.

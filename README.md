@@ -3,17 +3,17 @@
 <h1>🧰 Codex Bundled Repair</h1>
 <p><strong>A careful tune-up for Chrome and Computer Use in Codex Desktop.</strong></p>
 <p>Inspect, repair, and verify bundled plugins with a desktop window or the command line.</p>
-<p><a href="https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v0.1.0-preview.1">Download the preview</a> · <a href="#how-it-works">How it works</a> · <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/issues">Report an issue</a></p>
+<p><a href="https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v1.0.0">Download v1.0.0</a> · <a href="#how-it-works">How it works</a> · <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/issues">Report an issue</a></p>
 <p>
   <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml"><img alt="Build and tests" src="https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml/badge.svg?branch=main"></a>
-  <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v0.1.0-preview.1"><img alt="Preview release" src="https://img.shields.io/github/v/release/ChaiBoonHong/codex-bundled-repair?include_prereleases&amp;label=preview"></a>
+  <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v1.0.0"><img alt="Stable release v1.0.0" src="https://img.shields.io/github/v/release/ChaiBoonHong/codex-bundled-repair?label=stable"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-2ea44f"></a>
 </p>
 
 </div>
 
 > [!IMPORTANT]
-> The current `v0.1.0-preview.1` downloads are **unsigned CLI previews**. The Tailwind desktop GUI is being validated for `v1.0.0`; do not tag or describe it as stable until the GUI and repair flow pass on Windows and macOS.
+> Version `v1.0.0` is an **unsigned release**. Automated tests and Windows/macOS package builds passed. The packaged GUI opened on the Windows development machine; manual GUI action and repair-flow checks have not been completed on either platform. Treat those desktop interactions as unverified.
 
 ## The four-step tune-up
 
@@ -26,33 +26,33 @@
 
 ## Get started
 
-1. Download the ZIP for your platform and **SHA256SUMS** from the [preview release](https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v0.1.0-preview.1).
+1. Download the ZIP for your platform and **SHA256SUMS** from the [v1.0.0 release](https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v1.0.0).
 2. Check the ZIP's SHA-256 value, then extract it.
 3. Start with the read-only check. Run repair only if it reports a problem.
 
 **Windows PowerShell**
 
 ~~~powershell
-.\codex-bundled-repair-windows.exe
-.\codex-bundled-repair-windows.exe --repair
-.\codex-bundled-repair-windows.exe --test
+.\codex-bundled-repair-windows-cli.exe
+.\codex-bundled-repair-windows-cli.exe --repair
+.\codex-bundled-repair-windows-cli.exe --test
 ~~~
 
 **macOS Terminal**
 
 ~~~bash
-./codex-bundled-repair-macos-preview
-./codex-bundled-repair-macos-preview --repair
-./codex-bundled-repair-macos-preview --test
+./codex-bundled-repair-macos-cli
+./codex-bundled-repair-macos-cli --repair
+./codex-bundled-repair-macos-cli --test
 ~~~
 
 Each line is a separate command. Running the program without a flag only diagnoses. The <code>--repair</code> flag asks before it closes Codex or changes a plugin; <code>--test</code> starts the guided desktop test.
 
-### Desktop window for v1.0.0
+### Desktop window
 
-The upcoming desktop window includes the same read-only diagnosis, confirmed repair, and guided test. It uses a bundled Tailwind stylesheet and runs offline. The Windows window needs the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/); macOS uses its built-in WebKit view.
+The GUI includes the same read-only diagnosis, confirmed repair, and guided test. It uses a bundled Tailwind stylesheet and runs offline. The Windows window needs the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/); macOS uses its built-in WebKit view.
 
-The current release ZIP does not include the GUI yet. To run it from a source checkout:
+The release ZIP includes a separate GUI launcher and CLI launcher. On Windows, open <code>codex-bundled-repair-windows-gui.exe</code>. On macOS, open <code>codex-bundled-repair-macos-gui.app</code>. To run the GUI from a source checkout:
 
 ~~~powershell
 python -m pip install -r requirements-gui.txt
@@ -61,7 +61,7 @@ npm run build:css
 python gui.py
 ~~~
 
-The v1 ZIP will include a separate GUI launcher and CLI launcher. On Windows, open <code>codex-bundled-repair-windows-gui.exe</code> or run <code>codex-bundled-repair-windows-cli.exe</code> in PowerShell. On macOS, open <code>codex-bundled-repair-macos-gui.app</code> or run <code>codex-bundled-repair-macos-cli</code> in Terminal. Opening the GUI starts a read-only inspection; repair still requires a verified backup and explicit confirmation before each change.
+Opening the GUI starts a read-only inspection; repair still requires a verified backup and explicit confirmation before each change. The GUI action controls and live repair interactions have not been manually verified on a real desktop in this release.
 
 <details>
 <summary><strong>How do I check the download?</strong></summary>
@@ -71,7 +71,7 @@ Place both ZIPs and <code>SHA256SUMS</code> in the same folder.
 - On macOS, run <code>shasum -a 256 -c SHA256SUMS</code>.
 - On Windows, run <code>(Get-FileHash .\codex-bundled-repair-windows.zip -Algorithm SHA256).Hash</code> in PowerShell and compare the result with the Windows line in <code>SHA256SUMS</code>.
 
-The binaries are unsigned. Windows may show a SmartScreen warning. macOS may block an unsigned download; the tool does not ask you to turn off system security. If the executable bit was lost when extracting the macOS ZIP, run <code>chmod +x ./codex-bundled-repair-macos-preview</code>.
+The binaries are unsigned. Windows may show a SmartScreen warning. macOS may block an unsigned download; the tool does not ask you to turn off system security. If the executable bit was lost when extracting the macOS ZIP, run <code>chmod +x ./codex-bundled-repair-macos-cli</code>.
 
 </details>
 
@@ -140,7 +140,7 @@ python -m unittest discover -s tests -v
 python build_release.py
 ~~~
 
-Build on each target operating system. [GitHub Actions](https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml) builds both launchers and runs the tests on Windows and macOS. Pushing a <code>v*</code> tag creates a Release with both ZIPs and <code>SHA256SUMS</code>; a tag containing <code>preview</code> is marked as a prerelease. The `v1.0.0` tag is held until the GUI and repair flow are manually verified on both platforms.
+Build on each target operating system. [GitHub Actions](https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml) builds both launchers and runs the tests on Windows and macOS. Pushing a <code>v*</code> tag creates a Release with both ZIPs and <code>SHA256SUMS</code>; a tag containing <code>preview</code> is marked as a prerelease. The `v1.0.0` release notes disclose that manual GUI interaction checks remain incomplete.
 
 The automated tests use temporary directories and mocked Codex CLI responses. They do not change a real Codex installation. For file responsibilities and call flow, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
