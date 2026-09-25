@@ -7,8 +7,8 @@
 | `ui/index.html`, `ui/app.js`, `ui/input.css` | Accessible dashboard, status cards, action controls, and Tailwind source styles. `ui/styles.css` is generated during the build and ignored by Git. |
 | `requirements-gui.txt`, `package.json`, `package-lock.json` | Pin pywebview and the build-only Tailwind CLI. |
 | `tests/test_repair.py`, `tests/test_gui.py` | Exercise repair safety and the GUI-to-engine flow with temporary data and mocked dialogs. |
-| `build_release.py` | Builds separate console CLI and windowed GUI launchers, then archives both with the user guide and license. |
-| `.github/workflows/release.yml` | Builds the stylesheet, runs tests, and packages Windows and macOS archives; version tags publish ZIPs and SHA-256 checksums. |
+| `build_release.py` | Builds separate Windows GUI/CLI files and a macOS GUI DMG plus CLI file. |
+| `.github/workflows/release.yml` | Builds the stylesheet, runs tests, and produces separate labeled Windows/macOS release assets with SHA-256 checksums. |
 | `README.md` | Explains product purpose, use, setup, tests, deployment, limits, and source research. |
 | `RELEASE_NOTES.md` | Supplies the stable v1.0.0 release summary and safety conditions. |
 | `CONTEXT.md`, `lessons.md` | Record the active project phase and lasting user preferences. |

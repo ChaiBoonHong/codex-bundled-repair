@@ -37,7 +37,15 @@
 
 ## Choose your launcher
 
-The release ZIP includes a desktop window and a separate command-line launcher for each platform.
+The release provides individual assets—no ZIP bundle is needed. Download the launcher you want and the checksum file.
+
+| Release asset label | File | Use |
+|---|---|---|
+| Windows desktop GUI | <code>codex-bundled-repair-windows-gui.exe</code> | Open the visual app. Requires WebView2. |
+| Windows command line | <code>codex-bundled-repair-windows-cli.exe</code> | Run diagnosis, repair, or the guided test in PowerShell. |
+| macOS desktop GUI (DMG) | <code>codex-bundled-repair-macos-gui.dmg</code> | Open the disk image, then launch the app inside. |
+| macOS command line | <code>codex-bundled-repair-macos-cli</code> | Run diagnosis, repair, or the guided test in Terminal. |
+| SHA-256 checksums | <code>SHA256SUMS</code> | Check the downloaded file. |
 
 <details open>
 <summary><strong>🪟 Windows</strong></summary>
@@ -59,7 +67,7 @@ Windows needs the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.
 <details>
 <summary><strong>🍎 macOS</strong></summary>
 
-**Desktop window:** open <code>codex-bundled-repair-macos-gui.app</code>.
+**Desktop window:** open <code>codex-bundled-repair-macos-gui.dmg</code>, then double-click <code>codex-bundled-repair-macos-gui.app</code> in the mounted image.
 
 **Command line:** open Terminal in the extracted folder:
 
@@ -75,10 +83,10 @@ macOS may warn that the app is unsigned. The tool does not ask you to weaken mac
 
 ### Check your download
 
-Download <code>SHA256SUMS</code> next to the ZIP, then verify it:
+Compare the selected file's SHA-256 value with its matching line in <code>SHA256SUMS</code>:
 
-- **macOS:** <code>shasum -a 256 -c SHA256SUMS</code>
-- **Windows PowerShell:** compare <code>(Get-FileHash .\codex-bundled-repair-windows.zip -Algorithm SHA256).Hash</code> with the Windows line in <code>SHA256SUMS</code>.
+- **macOS:** <code>shasum -a 256 codex-bundled-repair-macos-gui.dmg</code> or the CLI file.
+- **Windows PowerShell:** <code>Get-FileHash .\codex-bundled-repair-windows-gui.exe -Algorithm SHA256</code> or the CLI file.
 
 ## How it works
 
@@ -142,7 +150,7 @@ If the editor cannot reach the system temporary folder, the CLI accepts <code>--
 
 ## Build and test
 
-People using the release ZIP do not need Python or Node.js. Source builds use Python 3.12+, Node.js 24, pywebview, and the pinned Tailwind CLI. Tailwind compiles to a local stylesheet; the desktop UI does not fetch styles from a CDN.
+People using release assets do not need Python or Node.js. Source builds use Python 3.12+, Node.js 24, pywebview, and the pinned Tailwind CLI. Tailwind compiles to a local stylesheet; the desktop UI does not fetch styles from a CDN.
 
 ~~~bash
 python -m venv .venv
@@ -153,7 +161,7 @@ python -m unittest discover -s tests -v
 python build_release.py
 ~~~
 
-Run <code>python gui.py</code> to launch the desktop window from a source checkout after building the stylesheet. Build on Windows for the Windows ZIP and macOS for the macOS ZIP. [GitHub Actions](https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml) tests and packages both platforms.
+Run <code>python gui.py</code> to launch the desktop window from a source checkout after building the stylesheet. Build on Windows for Windows executables and macOS for the macOS GUI DMG and CLI file. [GitHub Actions](https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml) tests and builds both platforms.
 
 ## Platform verification
 
