@@ -1,7 +1,7 @@
 # Current state
 
 - Stable `v1.0.0` is published as separate Windows GUI/CLI files and macOS GUI DMG/CLI files, with matching SHA-256 checksums and no ZIP release assets.
-- The reported GUI 404 fix is merged; Windows/macOS tests and packaging passed. Refreshing v1.0.0 binaries and aligning future release labels to filenames.
+- The Windows GUI 404 was fixed by loading the absolute PyInstaller UI path through pywebview's local server. Updated Windows/macOS assets are published in v1.0.0 with filename labels and verified checksums.
 - Manual GUI action and repair-flow interaction remains unverified on both platforms; the release notes and README disclose this limit. Do not claim those interactions have been manually verified.
 - The workspace directory is a clean Git checkout on `main` and tracks the connected GitHub repository's `origin/main` branch.
 - README is a polished v1.0.0 landing page with launcher details, collapsible sections, a Mermaid flow, and the current platform-verification status.
