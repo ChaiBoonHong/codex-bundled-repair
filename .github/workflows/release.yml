@@ -66,9 +66,9 @@ jobs:
           flags=()
           if [[ "$GITHUB_REF_NAME" == *preview* ]]; then flags+=(--prerelease); fi
           gh release create "$GITHUB_REF_NAME" \
-            "dist/codex-bundled-repair-windows-gui.exe#Windows desktop GUI" \
-            "dist/codex-bundled-repair-windows-cli.exe#Windows command line" \
-            "dist/codex-bundled-repair-macos-gui.dmg#macOS desktop GUI (DMG)" \
-            "dist/codex-bundled-repair-macos-cli#macOS command line" \
-            "dist/SHA256SUMS#SHA-256 checksums" \
+            "dist/codex-bundled-repair-windows-gui.exe#codex-bundled-repair-windows-gui.exe" \
+            "dist/codex-bundled-repair-windows-cli.exe#codex-bundled-repair-windows-cli.exe" \
+            "dist/codex-bundled-repair-macos-gui.dmg#codex-bundled-repair-macos-gui.dmg" \
+            "dist/codex-bundled-repair-macos-cli#codex-bundled-repair-macos-cli" \
+            "dist/SHA256SUMS#SHA256SUMS" \
             --verify-tag --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md "${flags[@]}"

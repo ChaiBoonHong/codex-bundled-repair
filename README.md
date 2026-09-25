@@ -37,15 +37,15 @@
 
 ## Choose your launcher
 
-The release provides individual assets—no ZIP bundle is needed. Download the launcher you want and the checksum file.
+The release provides individual assets—no ZIP bundle is needed. Each GitHub asset label matches its filename.
 
-| Release asset label | File | Use |
-|---|---|---|
-| Windows desktop GUI | <code>codex-bundled-repair-windows-gui.exe</code> | Open the visual app. Requires WebView2. |
-| Windows command line | <code>codex-bundled-repair-windows-cli.exe</code> | Run diagnosis, repair, or the guided test in PowerShell. |
-| macOS desktop GUI (DMG) | <code>codex-bundled-repair-macos-gui.dmg</code> | Open the disk image, then launch the app inside. |
-| macOS command line | <code>codex-bundled-repair-macos-cli</code> | Run diagnosis, repair, or the guided test in Terminal. |
-| SHA-256 checksums | <code>SHA256SUMS</code> | Check the downloaded file. |
+| Release file | Use |
+|---|---|
+| <code>codex-bundled-repair-windows-gui.exe</code> | Open the visual app. Requires WebView2. |
+| <code>codex-bundled-repair-windows-cli.exe</code> | Run diagnosis, repair, or the guided test in PowerShell. |
+| <code>codex-bundled-repair-macos-gui.dmg</code> | Open the disk image, then launch the app inside. |
+| <code>codex-bundled-repair-macos-cli</code> | Run diagnosis, repair, or the guided test in Terminal. |
+| <code>SHA256SUMS</code> | Check the downloaded file. |
 
 <details open>
 <summary><strong>🪟 Windows</strong></summary>
