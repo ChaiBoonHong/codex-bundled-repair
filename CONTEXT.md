@@ -1,8 +1,8 @@
 # Current state
 
-- Building an independent Windows/macOS Codex bundled-plugin repair utility for public GitHub source and unsigned release ZIPs.
-- The default command is read-only; repairs require a verified backup and per-plugin consent. Missing or invalid reserved sources stop with an official-app repair recommendation.
-- Windows read-only diagnosis and Chrome live click passed. Ten automated tests and both GitHub Actions builds passed. Computer Use file-edit was blocked by the development environment and concurrent input; macOS desktop verification is unavailable. Both first binaries are labeled preview.
-- The public GitHub repository and `v0.1.0-preview.1` release exist. The release is marked prerelease and contains both ZIPs plus a corrected `SHA256SUMS`; all published digests match GitHub's asset metadata.
-- Next: complete a real Windows Computer Use file-edit test and a real macOS desktop test before describing either platform as fully verified.
-- The README is now an English GitHub landing page with a preview notice, release links, a repair flow diagram, verification status, and contributor instructions. The user requested English throughout the application.
+- Adding a Tailwind and pywebview desktop GUI for Windows and macOS, while preserving the CLI as a separate launcher.
+- The GUI exposes read-only diagnosis, confirmed repair, and the guided temporary-target test. It uses the existing repair engine and retains verified backups, per-plugin consent, rollback, and the reserved-source safety stop.
+- The source branch has 17 passing tests. The Windows GUI and CLI launchers package successfully, and the GUI opens on the development Windows machine. Cross-platform Actions and macOS desktop checks are pending.
+- Stable `v1.0.0` remains gated on manual GUI and isolated repair-flow verification on both Windows and macOS. The existing public release is still `v0.1.0-preview.1`.
+- The workspace directory has no Git metadata; the source is being prepared in a clean clone for a GitHub pull request.
+- Keep user-facing content in English. The GUI uses bundled Tailwind CSS and never loads styling from a CDN.

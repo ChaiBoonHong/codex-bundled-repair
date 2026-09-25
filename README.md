@@ -1,8 +1,8 @@
 <div align="center">
 
 <h1>🧰 Codex Bundled Repair</h1>
-<p><strong>A small pit stop for Chrome and Computer Use in Codex Desktop.</strong></p>
-<p>Find a broken bundled plugin, back up your setup, and verify the result on Windows or macOS.</p>
+<p><strong>A careful tune-up for Chrome and Computer Use in Codex Desktop.</strong></p>
+<p>Inspect, repair, and verify bundled plugins with a desktop window or the command line.</p>
 <p><a href="https://github.com/ChaiBoonHong/codex-bundled-repair/releases/tag/v0.1.0-preview.1">Download the preview</a> · <a href="#how-it-works">How it works</a> · <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/issues">Report an issue</a></p>
 <p>
   <a href="https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml"><img alt="Build and tests" src="https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml/badge.svg?branch=main"></a>
@@ -13,7 +13,7 @@
 </div>
 
 > [!IMPORTANT]
-> The first Windows and macOS downloads are **unsigned previews**. Automated tests and builds pass on both platforms. A real Chrome click passed on Windows; the Windows Computer Use file edit and both macOS desktop actions still need live verification.
+> The current `v0.1.0-preview.1` downloads are **unsigned CLI previews**. The Tailwind desktop GUI is being validated for `v1.0.0`; do not tag or describe it as stable until the GUI and repair flow pass on Windows and macOS.
 
 ## The four-step tune-up
 
@@ -47,6 +47,21 @@
 ~~~
 
 Each line is a separate command. Running the program without a flag only diagnoses. The <code>--repair</code> flag asks before it closes Codex or changes a plugin; <code>--test</code> starts the guided desktop test.
+
+### Desktop window for v1.0.0
+
+The upcoming desktop window includes the same read-only diagnosis, confirmed repair, and guided test. It uses a bundled Tailwind stylesheet and runs offline. The Windows window needs the [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/); macOS uses its built-in WebKit view.
+
+The current release ZIP does not include the GUI yet. To run it from a source checkout:
+
+~~~powershell
+python -m pip install -r requirements-gui.txt
+npm ci
+npm run build:css
+python gui.py
+~~~
+
+The v1 ZIP will include a separate GUI launcher and CLI launcher. On Windows, open <code>codex-bundled-repair-windows-gui.exe</code> or run <code>codex-bundled-repair-windows-cli.exe</code> in PowerShell. On macOS, open <code>codex-bundled-repair-macos-gui.app</code> or run <code>codex-bundled-repair-macos-cli</code> in Terminal. Opening the GUI starts a read-only inspection; repair still requires a verified backup and explicit confirmation before each change.
 
 <details>
 <summary><strong>How do I check the download?</strong></summary>
@@ -102,7 +117,7 @@ If Codex edits <code>config.toml</code> after repair, the tool stops an automati
 
 ## Build, test, release
 
-The application is a single Python standard-library module. People using a release ZIP do **not** need Python. PyInstaller is needed only to make standalone binaries.
+The repair engine remains Python. The desktop window uses pywebview with local HTML, JavaScript, and Tailwind CSS. People using a release ZIP do **not** need Python or Node.js. PyInstaller packages the app; Node.js is used only to build the stylesheet.
 
 Use Python 3.12 or newer. Create a virtual environment and activate it with <code>.\.venv\Scripts\Activate.ps1</code> on Windows or <code>source .venv/bin/activate</code> on macOS:
 
@@ -110,19 +125,26 @@ Use Python 3.12 or newer. Create a virtual environment and activate it with <cod
 python -m venv .venv
 ~~~
 
-Then test and build:
+Install the pinned GUI and packaging dependency, then install the pinned Tailwind tooling:
+
+~~~bash
+python -m pip install -r requirements-gui.txt pyinstaller==6.22.3
+npm ci
+npm run build:css
+~~~
+
+Then run the tests and build both launchers:
 
 ~~~bash
 python -m unittest discover -s tests -v
-python -m pip install pyinstaller==6.22.3
 python build_release.py
 ~~~
 
-Build on each target operating system. [GitHub Actions](https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml) runs the tests and packages Windows and macOS separately. Pushing a <code>v*</code> tag creates a Release with both ZIPs and <code>SHA256SUMS</code>; a tag containing <code>preview</code> is marked as a prerelease.
+Build on each target operating system. [GitHub Actions](https://github.com/ChaiBoonHong/codex-bundled-repair/actions/workflows/release.yml) builds both launchers and runs the tests on Windows and macOS. Pushing a <code>v*</code> tag creates a Release with both ZIPs and <code>SHA256SUMS</code>; a tag containing <code>preview</code> is marked as a prerelease. The `v1.0.0` tag is held until the GUI and repair flow are manually verified on both platforms.
 
 The automated tests use temporary directories and mocked Codex CLI responses. They do not change a real Codex installation. For file responsibilities and call flow, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
-### Verification so far
+### Preview verification
 
 | Check | Windows | macOS |
 |---|---|---|
@@ -131,14 +153,28 @@ The automated tests use temporary directories and mocked Codex CLI responses. Th
 | Real Chrome test click | ✅ Passed | ⏳ Needs a Mac |
 | Real Computer Use file edit | ⏳ Needs a clean desktop run | ⏳ Needs a Mac |
 
+### v1.0.0 GUI verification
+
+| Check | Windows | macOS |
+|---|---|---|
+| GUI unit tests and Tailwind build | ✅ Passed locally | ⏳ GitHub Actions build pending |
+| Packaged GUI launcher starts | ✅ Passed locally | ⏳ Needs a Mac |
+| GUI repair and guided-test interaction | ⏳ Needs manual acceptance | ⏳ Needs manual acceptance |
+
+The Windows launch check only confirmed that the packaged window opens. It did not exercise the repair controls or change the live Codex profile.
+
 <details>
-<summary><strong>Research and design notes</strong></summary>
+<summary><strong>Search records and design notes</strong></summary>
 
 - [OpenAI's CLI reference](https://learn.chatgpt.com/docs/developer-commands) documents Codex plugin commands and machine-readable output. The tool uses those commands instead of parsing a formatted table.
 - [OpenAI's Computer Use guide](https://learn.chatgpt.com/docs/computer-use) places desktop control in the Windows/macOS app. [The browser guide](https://learn.chatgpt.com/docs/browser) says its built-in browser is unavailable in the CLI, so the live test is guided through Codex Desktop.
 - [An OpenAI Codex issue](https://github.com/openai/codex/issues/41164) reports that newer builds reject manual registration of the reserved <code>openai-bundled</code> source.
 - [An earlier Windows repair script](https://github.com/Jensen-Yao/codex-openai-bundled-plugin-repair) documents the older remove/add approach. This tool takes the supported path and adds macOS checks, verified backups, rollback, and tests.
 - No applicable ready-made repair solution was found on skills.sh during the initial search.
+- Tailwind's [CLI guide](https://tailwindcss.com/docs/installation/tailwind-cli) confirms CSS can be compiled and bundled as a static file, so the app does not fetch styles at runtime.
+- pywebview's [architecture guide](https://pywebview.idepy.com/en/guide/architecture) supports a local relative entry point with its built-in server and a Python/JavaScript bridge. Its [installation guide](https://github.com/r0x0r/pywebview/blob/master/docs/guide/installation.md) documents Windows WebView2 and macOS PyObjC requirements.
+- GitHub reference: [python-desktop-app](https://github.com/codingforentrepreneurs/python-desktop-app) demonstrates a Python desktop app with HTML and a Python/JavaScript bridge. It is older, so implementation follows current pywebview documentation and uses no React framework.
+- The skills.sh search found [Tailwind best-practice guidance](https://www.skills.sh/sergiodxa/agent-skills/frontend-tailwind-best-practices); no additional skill or UI component library is needed for this three-action window.
 
 </details>
 

@@ -1,0 +1,11 @@
+{
+  "name": "codex-bundled-repair-ui",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ui/input.css -o ui/styles.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3"
+  }
+}

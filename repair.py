@@ -127,6 +127,14 @@ def inspect(codex, home):
     return root, statuses
 
 
+def diagnose(codex, home):
+    root, statuses = inspect(codex, home)
+    packaged = package_source()
+    if packaged:
+        verify_package_copy(root, packaged)
+    return root, statuses, packaged
+
+
 def regular_files(root):
     if not root.exists():
         return []
@@ -216,15 +224,17 @@ def close_codex():
         raise RepairError("Codex did not close cleanly. Save your work and close it manually before retrying.")
 
 
-def repair(codex, home, statuses, backup_folder):
+def repair(codex, home, statuses, backup_folder, confirm_fn=None, emit=None):
+    confirm_fn = confirm_fn or confirm
+    emit = emit or print
     changed = []
     quarantine = home / "plugin-repair-quarantine" / backup_folder.name
     config = home / "config.toml"
     for name, status in statuses.items():
         if status["installed"] and status["enabled"] and status["cache_ok"]:
             continue
-        print(f"\n{name}: installed={status['installed']}, enabled={status['enabled']}, cache valid={status['cache_ok']}")
-        if not confirm(f"Repair {name} using the verified bundled source?"):
+        emit(f"\n{name}: installed={status['installed']}, enabled={status['enabled']}, cache valid={status['cache_ok']}")
+        if not confirm_fn(f"Repair {name} using the verified bundled source?"):
             continue
         current = status["cache_parent"]
         old = quarantine / name
@@ -270,7 +280,8 @@ def rollback(home, backup_folder, changed, expected_config_hash):
         shutil.copy2(saved, config)
 
 
-def live_test(test_dir=None, on_ready=None):
+def live_test(test_dir=None, on_ready=None, emit=None):
+    emit = emit or print
     token = secrets.token_hex(8)
     clicked = threading.Event()
 
@@ -315,27 +326,29 @@ def live_test(test_dir=None, on_ready=None):
                     subprocess.Popen(["open", "-a", "TextEdit", str(target)])
             except OSError as exc:
                 raise RepairError(f"Could not open the temporary test window: {exc}") from exc
-            print("\nOpen Codex Desktop and send these two prompts in a new task:")
-            print(f"1. Use Computer Use to open {target} in Notepad or TextEdit, append {token}, then save it.")
-            print(f"2. Use the Chrome plugin to open {url} and click 'Click to test Chrome'.")
-            print("Approve only access to these temporary targets. Waiting up to five minutes...")
+            emit("\nOpen Codex Desktop and send these two prompts in a new task:")
+            emit(f"1. Use Computer Use to open {target} in Notepad or TextEdit, append {token}, then save it.")
+            emit(f"2. Use the Chrome plugin to open {url} and click 'Click to test Chrome'.")
+            emit("Approve only access to these temporary targets. Waiting up to five minutes...")
             if on_ready:
                 on_ready(url, target, token)
             deadline = time.monotonic() + 300
             while time.monotonic() < deadline:
                 desktop_ok = token in target.read_text(encoding="utf-8", errors="replace")
                 if desktop_ok and clicked.is_set():
-                    print("Live test passed: Computer Use and Chrome both acted on temporary targets.")
+                    emit("Live test passed: Computer Use and Chrome both acted on temporary targets.")
                     return True
                 time.sleep(2)
-            print(f"Live test incomplete: Computer Use={desktop_ok}, Chrome={clicked.is_set()}.")
+            emit(f"Live test incomplete: Computer Use={desktop_ok}, Chrome={clicked.is_set()}.")
             return False
         finally:
             server.shutdown()
             server.server_close()
 
 
-def main(argv=None):
+def main(argv=None, *, confirm_fn=None, emit=None, on_status=None):
+    confirm_fn = confirm_fn or confirm
+    emit = emit or print
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repair", action="store_true", help="Back up and offer confirmed repairs")
     parser.add_argument("--test", action="store_true", help="Run a guided live test in Codex Desktop")
@@ -348,49 +361,51 @@ def main(argv=None):
     if not args.codex:
         raise RepairError("Codex CLI was not found. Install or repair the official Codex Desktop app.")
     home = args.codex_home.expanduser().resolve()
-    root, statuses = inspect(args.codex, home)
-    print(f"Codex bundled source: {root}")
-    packaged = package_source()
+    root, statuses, packaged = diagnose(args.codex, home)
+    if on_status:
+        on_status(root, statuses, packaged)
+    emit(f"Codex bundled source: {root}")
     if packaged:
-        verify_package_copy(root, packaged)
-        print(f"Desktop package source matches: {packaged}")
+        emit(f"Desktop package source matches: {packaged}")
     else:
-        print("Desktop package source could not be located; version match is unverified.")
+        emit("Desktop package source could not be located; version match is unverified.")
     for name, status in statuses.items():
-        print(f"{name}: installed={status['installed']}, enabled={status['enabled']}, cache valid={status['cache_ok']}")
+        emit(f"{name}: installed={status['installed']}, enabled={status['enabled']}, cache valid={status['cache_ok']}")
     needs_repair = any(not (s["installed"] and s["enabled"] and s["cache_ok"]) for s in statuses.values())
     if not args.repair and not args.test:
-        print("Run with --repair for confirmed repairs or --test for a guided desktop test.")
+        emit("Run with --repair for confirmed repairs or --test for a guided desktop test.")
         return 2 if needs_repair else 0
     changed, backup_folder, config_hash = [], None, None
     if args.repair and needs_repair:
         if not packaged:
             raise RepairError("Cannot verify the bundled source against the installed desktop package; no repair was attempted.")
-        print("The tool will never change WindowsApps permissions or re-register the reserved marketplace.")
-        if not confirm("Save your Codex work. May the tool ask Codex Desktop to close for repair?"):
+        emit("The tool will never change WindowsApps permissions or re-register the reserved marketplace.")
+        if not confirm_fn("Save your Codex work. May the tool ask Codex Desktop to close for repair?"):
             return 2
         close_codex()
         backup_folder = backup(home)
-        print(f"Verified backup: {backup_folder}")
-        changed, config_hash = repair(args.codex, home, statuses, backup_folder)
+        emit(f"Verified backup: {backup_folder}")
+        changed, config_hash = repair(args.codex, home, statuses, backup_folder, confirm_fn, emit)
         try:
-            _, refreshed = inspect(args.codex, home)
+            refreshed_root, refreshed = inspect(args.codex, home)
         except RepairError:
             rollback(home, backup_folder, changed, config_hash)
             raise
+        if on_status:
+            on_status(refreshed_root, refreshed, packaged)
         if any(not (s["installed"] and s["enabled"] and s["cache_ok"]) for s in refreshed.values()):
             rollback(home, backup_folder, changed, config_hash)
-            print("Plugin verification did not pass; the tool's changes were rolled back.")
+            emit("Plugin verification did not pass; the tool's changes were rolled back.")
             return 2
-        print("Plugin list and cache verification passed. Reopen Codex Desktop before the live test.")
-    if args.test or (changed and confirm("Run the guided live desktop test now?")):
-        if not live_test(args.test_dir):
-            if changed and confirm("Live test failed. Restore the tool's changes?"):
-                if not confirm("Save your Codex work. May the tool close Codex Desktop for rollback?"):
+        emit("Plugin list and cache verification passed. Reopen Codex Desktop before the live test.")
+    if args.test or (changed and confirm_fn("Run the guided live desktop test now?")):
+        if not live_test(args.test_dir, emit=emit):
+            if changed and confirm_fn("Live test failed. Restore the tool's changes?"):
+                if not confirm_fn("Save your Codex work. May the tool close Codex Desktop for rollback?"):
                     return 2
                 close_codex()
                 rollback(home, backup_folder, changed, config_hash)
-                print("The tool's changes were rolled back; the backup remains available.")
+                emit("The tool's changes were rolled back; the backup remains available.")
             return 2
     return 0
 
