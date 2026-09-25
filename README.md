@@ -157,8 +157,8 @@ The automated tests use temporary directories and mocked Codex CLI responses. Th
 
 | Check | Windows | macOS |
 |---|---|---|
-| GUI unit tests and Tailwind build | ✅ Passed locally | ⏳ GitHub Actions build pending |
-| Packaged GUI launcher starts | ✅ Passed locally | ⏳ Needs a Mac |
+| Tests, Tailwind, and GUI/CLI package builds | ✅ GitHub Actions | ✅ GitHub Actions |
+| Packaged GUI window opens on a real desktop | ✅ Windows development machine | ⏳ Needs a Mac |
 | GUI repair and guided-test interaction | ⏳ Needs manual acceptance | ⏳ Needs manual acceptance |
 
 The Windows launch check only confirmed that the packaged window opens. It did not exercise the repair controls or change the live Codex profile.
