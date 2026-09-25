@@ -38,7 +38,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: codex-repair-${{ matrix.os }}
-          path: dist/*.zip
+          path: dist/release/*
           if-no-files-found: error
 
   release:
@@ -57,7 +57,7 @@ jobs:
       - name: Write SHA-256 checksums
         run: |
           cd dist
-          sha256sum *.zip > SHA256SUMS
+          sha256sum codex-bundled-repair-* > SHA256SUMS
           sha256sum -c SHA256SUMS
       - name: Publish GitHub Release
         env:
@@ -65,4 +65,10 @@ jobs:
         run: |
           flags=()
           if [[ "$GITHUB_REF_NAME" == *preview* ]]; then flags+=(--prerelease); fi
-          gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS --verify-tag --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md "${flags[@]}"
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/codex-bundled-repair-windows-gui.exe#Windows desktop GUI" \
+            "dist/codex-bundled-repair-windows-cli.exe#Windows command line" \
+            "dist/codex-bundled-repair-macos-gui.dmg#macOS desktop GUI (DMG)" \
+            "dist/codex-bundled-repair-macos-cli#macOS command line" \
+            "dist/SHA256SUMS#SHA-256 checksums" \
+            --verify-tag --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md "${flags[@]}"

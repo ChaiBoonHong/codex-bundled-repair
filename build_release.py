@@ -1,10 +1,10 @@
-"""Build the CLI and desktop GUI archives for the current platform."""
+"""Build separate desktop GUI and command-line release assets."""
 
 import hashlib
 from pathlib import Path
+import shutil
 import subprocess
 import sys
-import zipfile
 
 
 if sys.platform == "win32":
@@ -40,17 +40,20 @@ gui = dist / (gui_name + (".exe" if sys.platform == "win32" else ".app"))
 if not cli.is_file() or not gui.exists():
     raise SystemExit(f"Expected launchers were not built: {cli.name}, {gui.name}")
 
+release_dir = dist / "release"
+release_dir.mkdir(parents=True, exist_ok=True)
+cli_asset = release_dir / cli.name
+shutil.copy2(cli, cli_asset)
 
-archive = dist / f"codex-bundled-repair-{label}.zip"
-with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as output:
-    output.write(cli, cli.name)
-    if gui.is_dir():
-        for path in sorted(gui.rglob("*")):
-            if path.is_file():
-                output.write(path, path.relative_to(dist).as_posix())
-    else:
-        output.write(gui, gui.name)
-    for filename in ("README.md", "LICENSE", "RELEASE_NOTES.md"):
-        output.write(filename)
+if sys.platform == "win32":
+    gui_asset = release_dir / gui.name
+    shutil.copy2(gui, gui_asset)
+else:
+    gui_asset = release_dir / f"{gui_name}.dmg"
+    subprocess.run(
+        ["hdiutil", "create", "-volname", "Codex Bundled Repair", "-srcfolder", str(gui), "-ov", "-format", "UDZO", str(gui_asset)],
+        check=True,
+    )
 
-print(f"{archive}: {hashlib.sha256(archive.read_bytes()).hexdigest()}")
+for asset in (gui_asset, cli_asset):
+    print(f"{asset}: {hashlib.sha256(asset.read_bytes()).hexdigest()}")
