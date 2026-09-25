@@ -21,11 +21,19 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements-gui.txt pyinstaller==6.22.3
+          npm ci
+      - name: Build local Tailwind stylesheet
+        run: npm run build:css
       - name: Run tests
         run: python -m unittest discover -s tests -v
-      - name: Install build tool
-        run: python -m pip install pyinstaller==6.22.3
-      - name: Build standalone archive
+      - name: Build CLI and desktop launchers
         run: python build_release.py
       - uses: actions/upload-artifact@v7
         with:

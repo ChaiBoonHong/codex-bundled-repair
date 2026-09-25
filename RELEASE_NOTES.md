@@ -1,8 +1,12 @@
-Codex Bundled Repair is an independent, unofficial helper for the Chrome and Computer Use plugins in Codex Desktop.
+# Codex Bundled Repair v1.0.0
 
-- Windows: this unsigned **preview** passes automated tests, a read-only check against Codex Desktop, and a real Chrome plugin click. The full Computer Use file-edit test has not passed in the development environment. Extract the Windows ZIP and run the executable from a terminal.
-- macOS: this unsigned **preview** passes automated tests and a hosted macOS build, but has not passed a real Mac desktop test. Extract the ZIP and run the executable from Terminal. Do not treat it as a verified Mac repair.
-- Both platforms: the default run only diagnoses. Repair always requires a verified backup and confirmation for each plugin change. `--test` starts a guided test against temporary local targets.
+This release adds a local desktop window for diagnosis, repair, and the guided test. The existing command-line launcher remains available in each platform ZIP.
+
+- The GUI uses pywebview and a locally compiled Tailwind stylesheet. It does not fetch UI files or styles from the network.
+- Windows requires the Microsoft Edge WebView2 Runtime. macOS uses the system WebKit view.
+- Diagnosis is read-only. Repair still requires a verified backup and confirmation before closing Codex Desktop and changing each plugin.
+- The guided test uses a temporary file and a localhost page. The tool does not upload diagnostics, read existing documents, or act on existing browser tabs.
 - The tool does not change WindowsApps permissions, bypass macOS system permissions, or re-register Codex's reserved `openai-bundled` marketplace.
+- This stable tag is created only after the packaged GUI and isolated repair flow have been verified on both Windows and macOS.
 
-The ZIP SHA-256 values are published in `SHA256SUMS`.
+The unsigned ZIP SHA-256 values are published in `SHA256SUMS`.
